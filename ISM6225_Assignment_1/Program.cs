@@ -16,22 +16,22 @@ namespace Assignment1_Fall20
 
             int[] A = new int[] { 1, 2, 2, 6 };
             bool check = MonotonicCheck(A);
-            Console.WriteLine(check);
+            Console.WriteLine("MonotonicCheck Output: " + check);
 
             int[] nums = new int[] { 3, 1, 4, 1, 5 };
             int k = 2;
             int pairs = DiffPairs(nums, k);
-            Console.WriteLine(pairs);
+            Console.WriteLine("DiffPairs Output: " + pairs);
 
-            string keyboard = "abcdefghijklmnopqrstuvwxyz";
-            string word = "dis";
+            string keyboard = "hijklmnopqrstuvwxyzabcdefg";
+            string word = "gobulls";
             int time = BullsKeyboard(keyboard, word);
-            Console.WriteLine(time);
+            Console.WriteLine("BullsKeyboard Output: " + time);
 
-            string str1 = "goulls";
-            string str2 = "gobulls";
+            string str1 = "sunday";
+            string str2 = "saturday";
             int minEdits = StringEdit(str1, str2);
-            Console.WriteLine(minEdits);
+            Console.WriteLine("StringEdit Output: " + minEdits);
 
         }
 
@@ -59,6 +59,7 @@ namespace Assignment1_Fall20
             {
                 if (x > 0) // print is only possible for positive numbers
                 {
+                    Console.WriteLine("X lines is " + x);
                     int maxRowLength = x * 2 - 1; //row length of the bottom row
                     for (int i = 1; i <= x; i++) // i is row number (starts at 1 convenience)
                     {
@@ -108,9 +109,10 @@ namespace Assignment1_Fall20
             {
                 if (n > 0)
                 {
+                    Console.Write("Series number n is : " + n);
+                    Console.WriteLine();
                     int currentNum = 1; // series start number
-                    int sum = 0; // running sum
-                    Console.Write("The odd numbers are : ");
+                    int sum = 0; // running sum                    
                     // in case we decide later to change the seed (series start) 
                     //number to an even number eg. (currentNum = 6)
                     //we can still print the next series of odd numbers
@@ -164,6 +166,7 @@ namespace Assignment1_Fall20
             {
                 if (n != null && n.Length > 1)
                 {
+                    Console.WriteLine("Array elements are: [" + string.Join(',', n.ToList()) + "]");
                     bool monotonicIncreasing = true;
                     bool monotonicDescreasing = true;
                     int curNum = n[0];
@@ -183,7 +186,6 @@ namespace Assignment1_Fall20
                     }
 
                     result = monotonicIncreasing || monotonicDescreasing;
-                    Console.WriteLine("Array is monotonic? " + result);
                 }
                 else
                 {
@@ -220,12 +222,14 @@ namespace Assignment1_Fall20
 
         public static int DiffPairs(int[] J, int k)
         {
-            int result = 0;
-            Console.WriteLine("Diff Pairs Method:");
+            Console.WriteLine("4. Diff Pairs Method:");
+            int result = 0;           
             try
             {
                 if (J != null && J.Length > 1 && k >= 0)
                 {
+                    Console.WriteLine("Array J elements are: [" + string.Join(',', J.ToList()) + "]");
+                    Console.WriteLine("Difference k is: " + k);
                     //int pairs are stored in a dictionary where key <= value (for convenience) 
                     Dictionary<int, int> uniquePairs = new Dictionary<int, int>(); 
                     //nested loops: take first value from the array and compare to all others sequentially,
@@ -257,7 +261,6 @@ namespace Assignment1_Fall20
                     //uncomment line below to see print out of unique pairs found (uses Linq methods)
                     //uniquePairs.Select(i => $"{i.Key}: {i.Value}").ToList().ForEach(Console.WriteLine);
                     result = uniquePairs.Count(); // get count of pairs
-                    Console.WriteLine("Number of diff pairs found within the array: " + result);
 
                 }
                 else
@@ -295,16 +298,40 @@ namespace Assignment1_Fall20
         */
         public static int BullsKeyboard(string keyboard, string word)
         {
+            Console.WriteLine("5. Bulls Keyboard Method:");
+            int numMoves = 0;
             try
             {
-                // Write your code here
+                //basic validations for input data - never trust caller
+                if (keyboard != null && word != null)
+                {
+                    Console.WriteLine("Keyboard: " + keyboard + "; Word: " + word);
+                    //for quicker search map our keyboard into a dictionary
+                    Dictionary<char, int> keyboardDict = new Dictionary<char, int>();
+                    for (int i = 0; i < keyboard.Length; i ++)
+                    {
+                        keyboardDict.Add(keyboard.ElementAt(i), i);
+                    }
+
+                    int curPosition = 0;
+                    foreach (char charInWord in word)
+                    {
+                        int newPosition = keyboardDict[charInWord]; //find position where we moved
+                        numMoves += Math.Abs(curPosition - newPosition); // add absolute value of the difference between current and new positions   
+                        curPosition = newPosition; //after we move from one position to another flip current position to the new position
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Please provide a non-null keyboard and word values");
+                }
             }
             catch
             {
                 Console.WriteLine("Exception occured while computing BullsKeyboard()");
             }
 
-            return 0;
+            return numMoves;
         }
 
         /* Given two strings str1 and str2 and below operations that can performed on str1.
@@ -332,18 +359,119 @@ namespace Assignment1_Fall20
         * returns      : Integer
         * return type  : int
         */
+
+        //method performs a series of loops (rounds) to edit the word (str1)
+        //each round produces 3 words generated from performing 1 of each operations on the character in each string produced as a result of previous round
+        //after each round the results of previous round get discarded
+        //method handles edge cases when string are not of equal length
+        //uncomment lines 381, 423 and 424 to see all words generated after each round
         public static int StringEdit(string str1, string str2)
         {
+            Console.WriteLine("6. Edit String Method:");
+            int result = 0;
             try
-            {
-                // Write your code here
+            {                
+                if (str1 != null && str2 != null) //validate strings passed
+                {
+                    Console.WriteLine("String to edit (str1): " + str1 + "; Template string (str2): " + str2);
+                    bool control = true; //control variable for the mail loop 
+                    Dictionary<string, int> ops = new Dictionary<string, int>(); //main dictionary containing all words
+                    ops.Add(str1, 0); //add str1 param as first word into the main dictionary
+                    int ans = 0;
+                    //int fullRound = 1; //uncomment this line and lines 417 and 418 to see the information about each round
+                    int len = str1.Length > str2.Length ? str1.Length : str2.Length; //find longer string to iterate over it's characters
+                    while (control) //loops until final word is constructed
+                    {
+                        Dictionary<string, int> loopDict = new Dictionary<string, int>(); //in each loop create a new dictionary
+
+                        //iterate through all the words constructed in the previous round (or only inital str1 in case of round 1)
+                        for (int i = 0; i < ops.Count; i++)
+                        {
+                            //get word constructed so far and how many rounds it already went through
+                            string str = ops.ElementAt(i).Key;
+                            int opNum = ops.ElementAt(i).Value;
+
+                            //iterate over each letter of the longer word (str1 or str2) computed earlier
+                            for (int j = 0; j < len; j++) 
+                            {
+                                char chartAtStr2 = str2.Length - 1 >= j ? str2[j] : char.MinValue; //in case str2 in shorter than str1
+
+                                //when letters at the same index between 2 words don't match perform all 3 operations and store in the temp
+                                //dictionary variable loopDict
+                                //replace and remove operations only possible when length of the word we are operating on has the given index j
+                                if (str.Length - 1 >= j && str[j] != chartAtStr2) 
+                                {
+                                    AddToDict(loopDict, PerformOperationOnWord(str, chartAtStr2, j, "insert"), (opNum + 1));
+                                    AddToDict(loopDict, PerformOperationOnWord(str, chartAtStr2, j, "replace"), (opNum + 1));
+                                    AddToDict(loopDict, PerformOperationOnWord(str, chartAtStr2, j, "remove"), (opNum + 1));
+                                    break; //perform operations only once to accurately keep track of the number of operations it takes to edit the word
+                                } else if (str.Length == j) //handle edge case for insert operation
+                                {
+                                    AddToDict(loopDict, PerformOperationOnWord(str, chartAtStr2, j, "insert"), (opNum + 1));
+                                }
+                            }
+
+
+                        }
+
+                        ops = loopDict; //store current round dictionary and discard all words constructed in the previous round
+                        if (ops.ContainsKey(str2)) //exit loop and return the answer when the word we are looking for (str2) is constructed
+                        {
+                            ans = ops[str2];
+                            control = false;
+                        }
+                        //Console.WriteLine("ROUND " + fullRound + ": " + string.Join(',', ops.Select(kvp => "(" + kvp.Key + "-" + kvp.Value.ToString() + ")")));
+                        //fullRound++;
+
+                    }
+                    result = ans;
+                } else
+                {
+                    Console.WriteLine("Please provide non-null string1 and string2 values");
+                }
+            
             }
-            catch
+            catch (Exception e)
             {
-                Console.WriteLine("Exception occured while computing StringEdit()");
+                Console.WriteLine("Exception occured while computing StringEdit()" + e.Message + e.StackTrace);
+                
             }
 
-            return 0;
+            return result;
+        }
+
+        //Method performs one of 3 operations (insert, remove, replace) on the string (word)
+        //position - postion of the character within a string to perform an operation on
+        //letter (insert and replace operations only) - character to insert or replace
+        //operation type of operation to perform (insert, remove, replace)
+        public static string PerformOperationOnWord(string word, char letter, int position, string operation)
+        {
+            
+            if ("replace".Equals(operation, StringComparison.InvariantCultureIgnoreCase))
+            {
+                word = word.Remove(position, 1);
+                word = word.Insert(position, letter.ToString());
+            } else if ("remove".Equals(operation, StringComparison.InvariantCultureIgnoreCase))
+            {
+                word = word.Remove(position, 1);                
+            } else {                
+                word = word.Insert(position, letter.ToString());
+            }
+
+            return word;
+        }
+
+        //Method accet a dictionary and key-value pair and adds the value to the dictionary or 
+        //replaces the value for that key with the one from the pair
+        public static void AddToDict(Dictionary<string, int> dict, string str, int num)
+        {
+            if (dict.ContainsKey(str))
+            {
+                dict[str] = num;
+            } else
+            {
+                dict.Add(str, num);
+            }
         }
     }
 
