@@ -10,23 +10,28 @@ namespace Assignment1_Fall20
         {
             int n = 5;
             PrintTriangle(n);
+            Console.WriteLine();
 
             int n2 = 5;
             PrintSeriesSum(n2);
+            Console.WriteLine();
 
             int[] A = new int[] { 1, 2, 2, 6 };
             bool check = MonotonicCheck(A);
             Console.WriteLine("MonotonicCheck Output: " + check);
+            Console.WriteLine();
 
             int[] nums = new int[] { 3, 1, 4, 1, 5 };
             int k = 2;
             int pairs = DiffPairs(nums, k);
             Console.WriteLine("DiffPairs Output: " + pairs);
+            Console.WriteLine();
 
             string keyboard = "hijklmnopqrstuvwxyzabcdefg";
             string word = "gobulls";
             int time = BullsKeyboard(keyboard, word);
             Console.WriteLine("BullsKeyboard Output: " + time);
+            Console.WriteLine();
 
             string str1 = "sunday";
             string str2 = "saturday";
@@ -364,7 +369,7 @@ namespace Assignment1_Fall20
         //each round produces 3 words generated from performing 1 of each operations on the character in each string produced as a result of previous round
         //after each round the results of previous round get discarded
         //method handles edge cases when string are not of equal length
-        //uncomment lines 381, 423 and 424 to see all words generated after each round
+        //uncomment lines 386, 428 and 429 to see all words generated after each round
         public static int StringEdit(string str1, string str2)
         {
             Console.WriteLine("6. Edit String Method:");
